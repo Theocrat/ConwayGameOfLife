@@ -1,0 +1,35 @@
+.living_cell {
+    background-color: #90fa70;
+    border: #ffffff;
+    border-width: 2px;
+    border-radius: 0px;
+    color: white;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;    
+}
+
+.living_cell:hover {
+    background-color: #9eff7e;
+}
+
+.dead_cell {
+    background-color: #454545;
+    border: #ffffff;
+    border-radius: 0px;
+    border-width: 2px;
+    color: white;
+    width: 31px;
+    height: 31px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;    
+}
+
+.dead_cell:hover {
+    background-color: #535353;
+}

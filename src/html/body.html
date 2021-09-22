@@ -1,0 +1,42 @@
+<table class="main_table">
+    <tr>
+        <td width="600px">
+            <table style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 18px;">
+                <tr>
+                    <td colspan="2"> <p>Choose which of the cells are going to be alive by clicking and hit BEGIN when you are ready.</p> </td>
+                </tr>
+
+                <tr>
+                    <td> Number of living cells: </td>
+                    <td width="35%" id="living_cells"></td>
+                </tr>
+
+                <tr>
+                    <td> Milliseconds per step: </td>
+                    <td> <input type="text" value="1000" id="step_time"/> </td>
+                </tr>
+
+                <tr>
+                    <td> Steps so far: </td>
+                    <td id="steps_so_far"></td>
+                </tr>
+
+                <tr>
+                    <td> <button class="side_button" onclick="Controller.beginSim()">START</button> </td>
+                    <td> <button class="side_button" onclick="Controller.paused = true">PAUSE</button> </td>
+                </tr>
+
+                <tr>
+                    <td> <button class="side_button" onclick="Controller.step()">STEP</button> </td>
+                    <td> <button class="side_button" onclick="initialize()">RESET</button> </td>
+                </tr>
+            </table>
+        </td>
+
+        <td>
+           <table cellspacing="2" id="gamespace">
+               <!-- This is where the action happens -->
+           </table> 
+        </td>
+    </tr>
+</table>

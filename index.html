@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conway's Game of Life</title>
+    <script type="text/javascript">var btnDict = {};
+
+function Button(row, col) {
+    let button = {
+        'row': row,
+        'col': col,
+        'alive': false
+    };
+
+    return button;
+}
+
+function btnclick(row, col) {
+    let btn_id = `cell_${row}_${col}`;
+    let show_box = document.getElementById('living_cells');
+    //console.log(btnDict[btn_id]);
+
+    if(btnDict[btn_id].alive) {
+        btnDict[btn_id].alive = false;
+        document.getElementById(btn_id).className = 'dead_cell';
+        show_box.innerHTML = `${parseInt( show_box.innerHTML ) - 1}`;
+    }
+    else {
+        btnDict[btn_id].alive = true;
+        document.getElementById(btn_id).className = 'living_cell';
+        show_box.innerHTML = `${parseInt( show_box.innerHTML ) + 1}`;
+    }
+}
+
+function neighbourhood(row, col) {
+    let neighbours = [];
+    let btn_id = `cell_${row}_${col}`;
+    //console.log('Running neighbourhood: ', btn_id);
+
+
+    for(let i = -1; i <= 1; i++) {
+        for(let j = -1; j <= 1; j++) {
+            if(i === 0 && j === 0)
+                continue;
+            
+            else if(btnDict[btn_id].row + i < 0 || btnDict[btn_id].row + i >= Controller.rmax)
+                continue;
+            
+            else if(btnDict[btn_id].col + j < 0 || btnDict[btn_id].col + j >= Controller.cmax)
+                continue;
+            
+            else {
+                let new_id = `cell_${row + i}_${col + j}`;
+                neighbours.push( btnDict[new_id] );
+            }
+        }
+    }
+
+    return neighbours;
+}
+
+function living_neighbours(row, col) {
+    let neighbours = neighbourhood(row, col);
+    let living_count = 0;
+    
+    neighbours.forEach( (cell) => {
+        if(cell.alive)
+            living_count += 1;
+    });
+
+    return living_count;
+}
+const Controller = {
+    'rmax': 20,
+    'cmax': 40,
+    'paused': true,
+    'step_time': -1,
+    'step_count': 0,
+
+    // Methods
+
+    'step': () => {
+        if(Controller.paused == false && Controller.step_time > 0) 
+            setTimeout(Controller.step, Controller.step_time);
+        
+        let flip_set = [];
+        
+        for(let row = 0; row < Controller.rmax; row++) {
+            for(let col = 0; col < Controller.cmax; col++) {
+                id = `cell_${row}_${col}`;
+                cell = btnDict[id];
+                if(cell == null)
+                    continue;
+                else {
+                    let living_count = living_neighbours(cell.row, cell.col);
+                    if(living_count < 2 && cell.alive)
+                        flip_set.push(cell);
+                    if(living_count > 3 && cell.alive)
+                        flip_set.push(cell);
+                    if(living_count == 3 && !cell.alive)
+                        flip_set.push(cell);
+                }
+            }
+        }
+
+        Controller.step_count += 1;
+        document.getElementById('steps_so_far').innerHTML = `${Controller.step_count}`;
+
+        let old_config = JSON.parse( JSON.stringify(btnDict) );
+        flip_set.forEach( (cell) => { btnclick(cell.row, cell.col) } );
+        if( JSON.stringify(old_config) == JSON.stringify(btnDict) )
+            Controller.paused = true;
+    },
+
+    'beginSim': () => {
+        Controller.step_time = parseInt( document.getElementById('step_time').value );
+        Controller.paused = false;
+
+        Controller.step();
+    }
+};
+function initialize() {
+    let gamespace = document.getElementById('gamespace');
+    let cell_collection = [];
+
+    Controller.step_time = -1;
+    Controller.step_count = 0;
+    Controller.paused = true;
+    
+    for(let r = 0; r < Controller.rmax; r++) {
+        let cell_row = [];
+        for(let c = 0; c < Controller.cmax; c++) {
+            cell_row.push(`<td> <button id="cell_${r}_${c}" class="dead_cell" onclick="btnclick(${r},${c})"></button> </td>`);
+            btnDict[`cell_${r}_${c}`] = Button(r, c);
+        }
+
+        let cell_row_html = `<tr>\n${cell_row.join('\n')}\n</tr>`
+        cell_collection.push(cell_row_html);
+    }
+
+    gamespace.innerHTML = cell_collection.join('\n\n');
+
+    document.getElementById('steps_so_far').innerHTML = '0';
+    document.getElementById('living_cells').innerHTML = '0';
+}
+</script>
+
+<style>
+.living_cell {
+    background-color: #90fa70;
+    border: #ffffff;
+    border-width: 2px;
+    border-radius: 0px;
+    color: white;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;    
+}
+
+.living_cell:hover {
+    background-color: #9eff7e;
+}
+
+.dead_cell {
+    background-color: #454545;
+    border: #ffffff;
+    border-radius: 0px;
+    border-width: 2px;
+    color: white;
+    width: 31px;
+    height: 31px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 24px;    
+}
+
+.dead_cell:hover {
+    background-color: #535353;
+}
+</style>
+</head>
+<body onload="initialize()">
+<table class="main_table">
+    <tr>
+        <td width="600px">
+            <table style="font-family: Verdana, Geneva, Tahoma, sans-serif; font-size: 18px;">
+                <tr>
+                    <td colspan="2"> <p>Choose which of the cells are going to be alive by clicking and hit BEGIN when you are ready.</p> </td>
+                </tr>
+
+                <tr>
+                    <td> Number of living cells: </td>
+                    <td width="35%" id="living_cells"></td>
+                </tr>
+
+                <tr>
+                    <td> Milliseconds per step: </td>
+                    <td> <input type="text" value="1000" id="step_time"/> </td>
+                </tr>
+
+                <tr>
+                    <td> Steps so far: </td>
+                    <td id="steps_so_far"></td>
+                </tr>
+
+                <tr>
+                    <td> <button class="side_button" onclick="Controller.beginSim()">START</button> </td>
+                    <td> <button class="side_button" onclick="Controller.paused = true">PAUSE</button> </td>
+                </tr>
+
+                <tr>
+                    <td> <button class="side_button" onclick="Controller.step()">STEP</button> </td>
+                    <td> <button class="side_button" onclick="initialize()">RESET</button> </td>
+                </tr>
+            </table>
+        </td>
+
+        <td>
+           <table cellspacing="2" id="gamespace">
+               <!-- This is where the action happens -->
+           </table> 
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

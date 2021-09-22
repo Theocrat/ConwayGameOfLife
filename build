@@ -1,0 +1,43 @@
+#!/usr/bin/bash
+
+cat src/html/head.html > ./index.html
+
+for file in $(ls src/js/)
+do
+    cat src/js/$file >> ./index.html
+    echo >> ./index.html
+done
+
+echo \</script\> >> ./index.html
+echo >> ./index.html
+echo \<style\> >> ./index.html
+
+for file in $(ls src/css/)
+do
+    cat src/css/$file >> ./index.html
+    echo >> ./index.html
+done
+
+echo \</style\> >> ./index.html
+echo \</head\> >> ./index.html
+echo \<body onload=\"initialize\(\)\"\> >> ./index.html
+
+cat src/html/body.html >> ./index.html
+
+echo >> ./index.html
+echo \</body\> >> ./index.html
+echo >> ./index.html
+echo \</html\> >> ./index.html
+
+if [ $# == "1" ]
+then
+    if [ $1 == "test" ]
+    then
+        xdg-open ./index.html
+    fi
+
+    if [ $1 == "clean" ]
+    then
+        rm ./index.html
+    fi
+fi
